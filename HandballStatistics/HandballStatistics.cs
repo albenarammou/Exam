@@ -31,11 +31,13 @@ namespace HandballStatistics
                     {
                         SepIndex = input.IndexOf("|");
                         InputLines[x] = input.Substring(0, SepIndex - 1);
-                        Team TeamMember = new Team();
-                        TeamMember.TeamIndex = y + x;
-                        TeamMember.TeamName = (input.Substring(0, SepIndex - 1));
-                        TeamMember.TeamWins = 0;
-                        TeamMember.TeamOpponents = "";
+                        Team TeamMember = new Team()
+                        {
+                            TeamIndex = y + x,
+                            TeamName = (input.Substring(0, SepIndex - 1)),
+                            TeamWins = 0,
+                            TeamOpponents = ""
+                        };
                         TeamList.Add(TeamMember);
                         input = input.Substring(SepIndex + 2, input.Length - SepIndex - 2);
                         x += 1;
@@ -100,19 +102,31 @@ namespace HandballStatistics
             }
 
 
-            //TeamList.Sort(TeamMember.TeamName);
 
-            //for (int i = 0; i < TeamList.Count; i++)
-            //{
-            //    TeamList.Select(n => n.TeamOpponents).Where(n => (n.TeamName == TeamList.ElementAt(i).TeamName));
-            //}
+            var results = TeamList.OrderByDescending(z => z.TeamWins).ThenBy(z=>z.TeamName).ToList();
+
+            //var result = words.SkipWhile(w => w.Length == 3);
+
+            var final =
+              from resultA in results
+              join resultB in results
+                    on resultA.TeamName.ToString() equals resultB.TeamOpponents.ToString()
+              select new
+              {
+                  TeamName = resultA.TeamName,
+                  TeamWins = resultA.TeamWins + resultB.TeamWins,
+                  TeamOpponents = resultA.TeamOpponents.ToString()+","+ resultB.TeamName.ToString()
+              };
+
+
+
 
 
             for (int i =0; i < TeamList.Count; i++)
             {
-                Console.WriteLine(TeamList.ElementAt(i).TeamName);
-                Console.WriteLine("-Wins:" + TeamList.ElementAt(i).TeamWins.ToString());
-                Console.WriteLine("-Opponents:" + TeamList.ElementAt(i).TeamOpponents);
+                Console.WriteLine(final.ElementAt(i).TeamName);
+                Console.WriteLine("-Wins:" + final.ElementAt(i).TeamWins.ToString());
+                Console.WriteLine("-Opponents:" + final.ElementAt(i).TeamOpponents);
             }
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
