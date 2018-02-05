@@ -31,6 +31,12 @@ namespace HandballStatistics
                     {
                         SepIndex = input.IndexOf("|");
                         InputLines[x] = input.Substring(0, SepIndex - 1);
+
+                        var existingTeam =
+                            from thisTeam in TeamList
+                            where thisTeam.TeamName == input.Substring(0, SepIndex - 1)
+                            select thisTeam;
+
                         Team TeamMember = new Team()
                         {
                             TeamIndex = y + x,
@@ -38,7 +44,12 @@ namespace HandballStatistics
                             TeamWins = 0,
                             TeamOpponents = ""
                         };
-                        TeamList.Add(TeamMember);
+
+                        if (existingTeam != null)
+                        { TeamList.Add(TeamMember); }
+                        else
+                        { }   
+
                         input = input.Substring(SepIndex + 2, input.Length - SepIndex - 2);
                         x += 1;
                         continue;
@@ -102,10 +113,7 @@ namespace HandballStatistics
             }
 
 
-
             var results = TeamList.OrderByDescending(z => z.TeamWins).ThenBy(z=>z.TeamName).ToList();
-
-            //var result = words.SkipWhile(w => w.Length == 3);
 
             var final =
               from resultA in results
@@ -117,17 +125,26 @@ namespace HandballStatistics
                   TeamWins = resultA.TeamWins + resultB.TeamWins,
                   TeamOpponents = resultA.TeamOpponents.ToString()+","+ resultB.TeamName.ToString()
               };
+                        
+            //for (int i = 0; i < TeamList.Count; i++)
+            //{
+            //    Console.WriteLine(final.ElementAt(i).TeamName);
+            //    Console.WriteLine("-Wins:" + final.ElementAt(i).TeamWins.ToString());
+            //    if (final.ElementAt(i).TeamOpponents.Substring(final.ElementAt(i).TeamOpponents.ToString().IndexOf(",") + 1, 2) == final.ElementAt(i).TeamOpponents.Substring(0, 2))
+            //        Console.WriteLine("-Opponents:" + final.ElementAt(i).TeamOpponents.ToString().Substring(0, final.ElementAt(i).TeamOpponents.ToString().IndexOf(",")));
+            //    else
+            //        Console.WriteLine("-Opponents:" + final.ElementAt(i).TeamOpponents);
+            //}
 
 
 
-
-
-            for (int i =0; i < TeamList.Count; i++)
+            for (int i = 0; i < TeamList.Count; i++)
             {
-                Console.WriteLine(final.ElementAt(i).TeamName);
-                Console.WriteLine("-Wins:" + final.ElementAt(i).TeamWins.ToString());
-                Console.WriteLine("-Opponents:" + final.ElementAt(i).TeamOpponents);
+                Console.WriteLine(results.ElementAt(i).TeamName);
+                Console.WriteLine("-Wins:" + results.ElementAt(i).TeamWins.ToString());
+                Console.WriteLine("-Opponents:" + results.ElementAt(i).TeamOpponents);
             }
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
 
